@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from flask_jwt_extended import create_access_token, create_refresh_token
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import verify_jwt_in_request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt
 from flask_jwt_extended import get_jwt_identity
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -47,25 +47,20 @@ jwt = JWTManager(app)
 
 #app.register_blueprint()
 
-class AuthBaseClass(ABC):
+class AbstractCacheStorage(ABC):
     @abstractmethod
-    def login(self):
+    def get(self, key: str, **kwargs):
+        pass
+
+    @abstractmethod
+    def set(self, key: str, value: str, expire: int, **kwargs):
         pass
 
 
-class Auth(AuthBaseClass):
-    #self.db = PostgresService()
-    def login(self, user, password):
-        print(f'im {user}, with p {password}')
-        # TODO HASH PASSWORD 
-        hashed_password = generate_password_hash(password=password)
-        print(hashed_password)
-        print(check_password_hash(hashed_password, password))
-        #decode_and_verify_jwt(encoded_token, is_access_token=True, check_csrf=False)
-        db = PostgresService()
-        db.register(user, hashed_password)
-
-        return {}
+# class Redis(AuthBaseClass):
+#     #self.db = PostgresService()
+#     def login(self, user, password):
+#         return {}
 
 
 @app.route("/auth/signin", methods=['POST'])
@@ -124,6 +119,7 @@ def sign_up():
 @jwt_required(refresh=True, locations=['headers'])
 def refresh():
     ''' curl -X POST -H "Authorization: Bearer <refresh_token>" '''
+    print(get_jwt())
     print('eto AUTH TOK', request.headers['Authorization'])
     return {}
 # curl -X POST -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2Njg4MTgxMiwianRpIjoiNDU0ODdkZmItYjE4NS00NmVmLTkxNDMtY2Y0OTYxZmIwNDNhIiwidHlwZSI6InJlZnJlc2giLCJzdWIiOiI5NzQ1NzZ1aTRkZ2ZnZGZnZCIsIm5iZiI6MTY2Njg4MTgxMiwiZXhwIjoxNjY5NDczODEyfQ.vQrs7N3p-QIFBFidL4jrdzqvnOnbhX7ARW0aiAXfVzs"

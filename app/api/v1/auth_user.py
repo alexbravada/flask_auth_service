@@ -1,9 +1,9 @@
 from datetime import timedelta
-from pprint import pprint
 
 from flask import Blueprint
 from flask import request
 from flask import jsonify
+from abc import ABC, abstractmethod
 
 from flask_jwt_extended import create_access_token, create_refresh_token
 from flask_jwt_extended import JWTManager
@@ -11,17 +11,22 @@ from flask_jwt_extended import verify_jwt_in_request
 from flask_jwt_extended import jwt_required, get_jwt
 from flask_jwt_extended import get_jwt_identity
 
+
 from db.connect import PostgresService
 
-#from models.user import engine
-#from models.user import User
+
+auth_user_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
-user_bp = Blueprint('user', __name__, url_prefix='/user')
+@auth_user_bp.route('/', methods=['GET', 'POST']):
+def deprecated():
+    return jsonify({'deprecated': 'use routes: /api/v1/auth/user/ : signin, signout, refresh, access'}), 401
 
 
-@user_bp.route("/signin", methods=['POST'])
+@auth_user_bp.route("/signin", methods=['POST'])
 def sign_in():
+    return jsonify({'deprecated': 'use routes: /api/v1/auth/user/ : signin, signout, refresh, access'}), 401
+
     '''
         curl -X POST -H "Content-Type: application/json" -d '{"email":"test_user", "password":"123"}' http://127.0.0.1:5000/api/v1/auth/user/signin
         url = "http://localhost:8080"
@@ -53,13 +58,16 @@ def sign_in():
         return jsonify(response), 200
 
 
-@user_bp.route('/signup', methods=['POST'])
+@auth_user_bp.route('/signup', methods=['POST'])
 def sign_up():
+    return jsonify({'deprecated': 'use routes: /api/v1/auth/user/ : signin, signout, refresh, access'}), 401
+
     '''curl -X POST -H "Content-Type: application/json" -d '{"email":"test_user", "password":"123"}' http://127.0.0.1:5000/api/v1/auth/user/signup'''
     result = request.json # or result = request.get_json(force=True)
     email = result.get('email')
     password = result.get('password')
-    print(email)
+    if not email or not password:
+        return jsonify({'error': 'email & password require'}), 401
     db = PostgresService()
     response = db.register(email, password)
     print('resp sttttttaaaa: ', response.get('status'))
@@ -72,17 +80,20 @@ def sign_up():
 @user_bp.route('/access', methods=['POST'])
 @jwt_required(locations=['headers'])
 def access():
+    return jsonify({'deprecated': 'use routes: /api/v1/auth/user/ : signin, signout, refresh, access'}), 401
+
     ''' curl -X POST -H "Authorization: Bearer <refresh_token>" '''
     print(get_jwt())
     print('eto Access TOK', request.headers['Authorization'])
     return {}
 
 
-
-@user_bp.route('/refresh', methods=['POST'])
+@auth_user_bp.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True, locations=['headers'])
 def refresh():
+    return jsonify({'deprecated': 'use routes: /api/v1/auth/user/ : signin, signout, refresh, access'}), 401
+
     ''' curl -X POST -H "Authorization: Bearer <refresh_token>" '''
     print(get_jwt())
-    print('eto Refresh TOK', request.headers['Authorization'])
+    print('eto AUTH TOK', request.headers['Authorization'])
     return {}

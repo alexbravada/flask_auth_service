@@ -26,10 +26,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from db.connect import PostgresService
 
 
-auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
+user = Blueprint('user', __name__, url_prefix='/user')
 
 
-@auth_bp.route("/signin", methods=['POST'])
+@user.route("/signin", methods=['POST'])
 def sign_in():
     '''
         curl -X POST -H "Content-Type: application/json" -d '{"mail":"test_user", "password":"123"}' http://127.0.0.1:5000/auth/signin
@@ -60,3 +60,38 @@ def sign_in():
         response['refresh_token'] = refresh_token
         response['resp'] = f"its from pipeline: {request.url}"
         return jsonify(response), 200
+
+
+@user.route('/signup', methods=['POST'])
+def sign_up():
+    '''curl -X POST -H "Content-Type: application/json" -d '{"email":"test_user", "password":"123"}' http://127.0.0.1:5000/auth/signup'''
+    result = request.json # or result = request.get_json(force=True)
+    email = result.get('email')
+    password = result.get('password')
+    print(email)
+    db = PostgresService()
+    response = db.register(email, password)
+    print('resp sttttttaaaa: ', response.get('status'))
+    if response.get('status') == '201':
+        return jsonify(response), 201
+    else: 
+        return jsonify(response), 403
+
+
+@user.route('/signup', methods=['POST'])
+@jwt_required(locations=['headers'])
+def access():
+    ''' curl -X POST -H "Authorization: Bearer <refresh_token>" '''
+    print(get_jwt())
+    print('eto Access TOK', request.headers['Authorization'])
+    return {}
+
+
+
+@user.route('/refresh', methods=['POST'])
+@jwt_required(refresh=True, locations=['headers'])
+def refresh():
+    ''' curl -X POST -H "Authorization: Bearer <refresh_token>" '''
+    print(get_jwt())
+    print('eto Refresh TOK', request.headers['Authorization'])
+    return {}

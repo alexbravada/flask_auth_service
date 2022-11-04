@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
@@ -22,7 +24,7 @@ metadata_obj = MetaData()
 
 class DefaultMixin(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    created = Column(DateTime(), nullable=False)
+    created = Column(DateTime(), nullable=False, default=datetime.datetime.utcnow())
     modified = Column(DateTime(), nullable=True)
 
 

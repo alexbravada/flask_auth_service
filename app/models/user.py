@@ -75,7 +75,7 @@ class Role(DefaultMixin):
 class ResourceRole(DefaultMixin):
     __tablename__ = 'resource__role'
     role_id = Column(Integer(), ForeignKey('role.id'))
-    resource_id = Column(Integer(), ForeignKey('resource.id'))
+    # resource_id = Column(Integer(), ForeignKey('resource.id'))
     can_create = Column(Boolean, nullable=False)
     can_read = Column(Boolean, nullable=False)
     can_update = Column(Boolean, nullable=False)

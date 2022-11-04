@@ -52,18 +52,20 @@ Base = declarative_base()
 #     def __repr__(self):
 #         return f"User(id={self.id!r}, email={self.email!r}, password={self.password!r})"
 
-
-class LoginRecord(Base):
-    __tablename__ = 'login_history'
+class DefaultMixin(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
+    created_at = Column(DateTime(), nullable=False)
+    updated_at = Column(DateTime(), nullable=False)
+
+class LoginRecord(DefaultMixin):
+    __tablename__ = 'login_history'
     login_time = Column(DateTime(), nullable=False)
     useragent = Column(String(256), nullable=True)
 
     userinfo_id = Column(Integer, ForeignKey('user_info.id'), nullable=False)
 
-class UserInfo(Base):
+class UserInfo(DefaultMixin):
     __tablename__ = 'user_info'
-    id = Column(Integer, primary_key=True, autoincrement=True)
     email = Column(String(256), unique=True, nullable=False)
     first_name = Column(String(256), nullable=False)
     last_name = Column(String(256), nullable=False)
@@ -74,22 +76,19 @@ class UserInfo(Base):
     login_records = relationship('LoginRecord')
     roles = relationship('User_Role', backref='userinfo')
 
-class User_Role(Base):
+class User_Role(DefaultMixin):
     __tablename__ = 'user__role'
-    id = Column(Integer, primary_key=True, autoincrement=True)
     userinfo_id = Column(Integer(), ForeignKey('user_info.id'))
     role_id = Column(Integer(), ForeignKey('role.id'))
 
-class Role(Base):
+class Role(DefaultMixin):
     __tablename__ = 'role'
-    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(128), nullable=False)
     description = Column(String(256), nullable=True)
     users = relationship('User_Role', backref='role')
 
-class Resource_Role(Base):
+class Resource_Role(DefaultMixin):
     __tablename__ = 'resource__role'
-    id = Column(Integer, primary_key=True, autoincrement=True)
     role_id = Column(Integer(), ForeignKey('role.id'))
     resource_id = Column(Integer(), ForeignKey('resource.id'))
     can_create = Column(Boolean, nullable=False)

@@ -34,7 +34,7 @@ class LoginRecord(DefaultMixin):
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
-        return f'LoginRecord(id={self.id!r}, email={self.login_time!r}, useragent={self.useragent!r})'
+        return f'LoginRecord(id={self.id!r}, login_time={self.login_time!r}, useragent={self.useragent!r})'
 
 
 class User(DefaultMixin):

@@ -31,26 +31,74 @@ Base = declarative_base()
 #settings = Settings()
 #meta = MetaData()
 
-class User(Base):
-    __tablename__ = "user_account"
+# class User(Base):
+#     __tablename__ = "user_account"
+#     id = Column(Integer, primary_key=True, autoincrement=True)
+#     email = Column(String(30), unique=True, nullable=False)
+#     first_name = Column(String(30), nullable=True, default='First Name')
+#     last_name = Column(String(50), nullable=True, default='Last Name')
+#     password = Column(String, nullable=False)
+#     #verified_email = Column(Boolean, default=True)
+#     date_joined = Column(DateTime, default=datetime.datetime.utcnow())
+#     is_active = Column(Boolean, default=True)
+#     # agent_id = Column(Integer, ForeignKey('user_agent.id'))
+#
+#     #agent = relationship('UserAgent', back_populates='user') # 1
+#
+#     #firstname = Column(String, default='NONAME')
+#     # addresses = relationship(
+#     #     "Address", back_populates="user", cascade="all, delete-orphan"
+#     # )
+#     def __repr__(self):
+#         return f"User(id={self.id!r}, email={self.email!r}, password={self.password!r})"
+
+
+class LoginRecord(Base):
+    __tablename__ = 'login_history'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    email = Column(String(30), unique=True, nullable=False)
-    first_name = Column(String(30), nullable=True, default='First Name')
-    last_name = Column(String(50), nullable=True, default='Last Name')
-    password = Column(String, nullable=False)
-    #verified_email = Column(Boolean, default=True)
-    date_joined = Column(DateTime, default=datetime.datetime.utcnow())
+    login_time = Column(DateTime(), nullable=False)
+    useragent = Column(String(256), nullable=True)
+
+    userinfo_id = Column(Integer, ForeignKey('user_info.id'), nullable=False)
+
+class UserInfo(Base):
+    __tablename__ = 'user_info'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    email = Column(String(256), unique=True, nullable=False)
+    first_name = Column(String(256), nullable=False)
+    last_name = Column(String(256), nullable=False)
+    password = Column(String(512), nullable=False)
     is_active = Column(Boolean, default=True)
-    # agent_id = Column(Integer, ForeignKey('user_agent.id'))
+    is_verified = Column(Boolean, default=False)
 
-    #agent = relationship('UserAgent', back_populates='user') # 1
+    login_records = relationship('LoginRecord')
+    roles = relationship('User_Role', backref='userinfo')
 
-    #firstname = Column(String, default='NONAME')
-    # addresses = relationship(
-    #     "Address", back_populates="user", cascade="all, delete-orphan"
-    # )
-    def __repr__(self):
-        return f"User(id={self.id!r}, email={self.email!r}, password={self.password!r})"
+class User_Role(Base):
+    __tablename__ = 'user__role'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    userinfo_id = Column(Integer(), ForeignKey('user_info.id'))
+    role_id = Column(Integer(), ForeignKey('role.id'))
+
+class Role(Base):
+    __tablename__ = 'role'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(128), nullable=False)
+    description = Column(String(256), nullable=True)
+    users = relationship('User_Role', backref='role')
+
+class Resource_Role(Base):
+    __tablename__ = 'resource__role'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    role_id = Column(Integer(), ForeignKey('role.id'))
+    resource_id = Column(Integer(), ForeignKey('resource.id'))
+    can_create = Column(Boolean, nullable=False)
+    can_read = Column(Boolean, nullable=False)
+    can_update = Column(Boolean, nullable=False)
+    can_delete = Column(Boolean, nullable=False)
+
+
+
 
 
 # class UserAgent(Base):
@@ -63,11 +111,7 @@ class User(Base):
 #     user = relationship("User", back_populates="agent") # 1
 
 
-class UserRole(Base):
-    __tablename__ = 'user_role'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, default = 'default_role')
-    description = Column(Text, nullable=True)
+
 
 
 Base.metadata.create_all(bind=engine)

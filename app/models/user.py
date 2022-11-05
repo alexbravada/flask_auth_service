@@ -33,7 +33,7 @@ class LoginRecord(DefaultMixin, Base):
     login_time = Column(DateTime(), nullable=False)
     useragent = Column(String(256), nullable=True)
 
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('user_info.id'), nullable=False)
 
     def __repr__(self):
         return f'LoginRecord(id={self.id!r}, login_time={self.login_time!r}, useragent={self.useragent!r})'
@@ -57,7 +57,7 @@ class User(DefaultMixin, Base):
 
 class UserRole(DefaultMixin, Base):
     __tablename__ = 'user__role'
-    user_id = Column(Integer(), ForeignKey('user.id'))
+    user_id = Column(Integer(), ForeignKey('user_info.id'))
     role_id = Column(Integer(), ForeignKey('role.id'))
 
     def __repr__(self):

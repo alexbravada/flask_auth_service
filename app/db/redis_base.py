@@ -1,12 +1,10 @@
 import abc
-from redis import Redis
-from app.config.settings import PGDSN, RedisDSNDSN, Settings
+import redis
+from app.config.settings import Settings
 
 
+SETTINGS = Settings()
 
-redis.redis = await aioredis.create_redis_pool(
-    (settings.REDIS_HOST, settings.REDIS_PORT), minsize=10, maxsize=20
-)
 
 class AbstractCacheStorage(abc.ABC):
     @abstractmethod
@@ -20,5 +18,5 @@ class AbstractCacheStorage(abc.ABC):
 
 class RedisStorage(AbstractCacheStorage):
     def __init__(self):
-        redis = **Settings.Redis.dict()
+        redis = redis.Redis(**SETTINGS.Redis.dict(), decode_responses=True)
         

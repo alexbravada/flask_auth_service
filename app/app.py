@@ -23,7 +23,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 #from models.user import engine
 #from models.user import User
 
-from db.connect import PostgresService
+from db.user_service import UserService
 from api import api_blueprint
 
 app = Flask(__name__)
@@ -78,7 +78,7 @@ def sign_in():
     #auth = Auth()
     #response = auth.login(login, password)
 
-    db = PostgresService()
+    db = UserService()
     print('bla bla bla')
     res = db.login(email, password)
     if not res:
@@ -104,7 +104,7 @@ def sign_up():
     email = result.get('email')
     password = result.get('password')
     print(email)
-    db = PostgresService()
+    db = UserService()
     response = db.register(email, password)
     print('resp sttttttaaaa: ', response.get('status'))
     if response.get('status') == '201':

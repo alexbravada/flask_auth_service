@@ -11,7 +11,7 @@ from flask_jwt_extended import verify_jwt_in_request
 from flask_jwt_extended import jwt_required, get_jwt
 from flask_jwt_extended import get_jwt_identity
 
-from db.connect import PostgresService
+from db.user_service import UserService
 
 #from models.user import engine
 #from models.user import User
@@ -33,7 +33,7 @@ def sign_in():
     password = result.get('password')
     if not email or not password:
         return jsonify({'error': 'email & password require'}), 401
-    db = PostgresService()
+    db = UserService()
     print('bla bla bla')
     res = db.login(email, password)
     if not res:
@@ -60,7 +60,7 @@ def sign_up():
     email = result.get('email')
     password = result.get('password')
     print(email)
-    db = PostgresService()
+    db = UserService()
     response = db.register(email, password)
     print('resp sttttttaaaa: ', response.get('status'))
     if response.get('status') == '201':

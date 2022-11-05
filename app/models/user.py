@@ -22,13 +22,13 @@ Base = declarative_base()
 metadata_obj = MetaData()
 
 
-class DefaultMixin(Base):
+class DefaultMixin:
     id = Column(Integer, primary_key=True, autoincrement=True)
     created = Column(DateTime(), nullable=False, default=datetime.datetime.utcnow())
     modified = Column(DateTime(), nullable=True)
 
 
-class LoginRecord(DefaultMixin):
+class LoginRecord(DefaultMixin, Base):
     __tablename__ = 'login_history'
     login_time = Column(DateTime(), nullable=False)
     useragent = Column(String(256), nullable=True)
@@ -39,7 +39,7 @@ class LoginRecord(DefaultMixin):
         return f'LoginRecord(id={self.id!r}, login_time={self.login_time!r}, useragent={self.useragent!r})'
 
 
-class User(DefaultMixin):
+class User(DefaultMixin, Base):
     __tablename__ = 'user_info'
     email = Column(String(256), unique=True, nullable=False)
     first_name = Column(String(256), nullable=False)
@@ -55,7 +55,7 @@ class User(DefaultMixin):
         return f'User(id={self.id!r}, email={self.email!r})'
 
 
-class UserRole(DefaultMixin):
+class UserRole(DefaultMixin, Base):
     __tablename__ = 'user__role'
     user_id = Column(Integer(), ForeignKey('user.id'))
     role_id = Column(Integer(), ForeignKey('role.id'))
@@ -64,7 +64,7 @@ class UserRole(DefaultMixin):
         return f'User_Role(id={self.id!r}, user_id={self.user_id!r}, role_id={self.role_id!r})'
 
 
-class Role(DefaultMixin):
+class Role(DefaultMixin, Base):
     __tablename__ = 'role'
     name = Column(String(128), nullable=False)
     description = Column(String(256), nullable=True)
@@ -74,7 +74,7 @@ class Role(DefaultMixin):
         return f'Role(id={self.id!r}, name={self.name!r})'
 
 
-class ResourceRole(DefaultMixin):
+class ResourceRole(DefaultMixin, Base):
     __tablename__ = 'resource__role'
     role_id = Column(Integer(), ForeignKey('role.id'))
     # resource_id = Column(Integer(), ForeignKey('resource.id'))

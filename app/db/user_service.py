@@ -1,11 +1,6 @@
 from db.pg_base import PostgresService
 from models.user import User
-from config.settings import Settings
-
-from sqlalchemy import create_engine
-from sqlalchemy import select
-
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.exc import MultipleResultsFound
 from werkzeug.security import generate_password_hash, check_password_hash

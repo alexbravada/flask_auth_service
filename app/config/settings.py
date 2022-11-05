@@ -25,7 +25,7 @@ class RedisDSN(BaseModel):
 
 class Settings(BaseSettings):
     PG: PGDSN = PGDSN()
-    #Redis: RedisDSN
+    Redis: RedisDSN
     PG_CONNECT_STRING: AnyUrl = f'postgresql+psycopg2://{PG.user}:{PG.password}@0.0.0.0:{PG.port}/{PG.dbname}'
     # PG_ENGINE = create_engine(
     #                             PG_CONNECT_STRING,

@@ -10,8 +10,11 @@ from sqlalchemy import MetaData
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship
+from app.config.settings import Settings
 
-db_connection_string = 'postgresql+psycopg2://user:123qwe@0.0.0.0:5432/db_users'
+settings = Settings()
+
+db_connection_string = settings.PG_CONNECT_STRING # 'postgresql+psycopg2://user:123qwe@0.0.0.0:5432/db_users'
 engine = create_engine(
     db_connection_string,
     isolation_level="REPEATABLE READ",

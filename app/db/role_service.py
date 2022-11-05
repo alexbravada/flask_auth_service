@@ -1,67 +1,101 @@
+from datetime import datetime
+
 from db.pg_base import PostgresService
-from models.user import User
+from models.user import User, Role, UserRole
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import NoResultFound
-from sqlalchemy.exc import MultipleResultsFound
-from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class UserService(PostgresService):
     def __init__(self):
         super().__init__()
 
-    # def register(self, email, password):
-    #     with Session(self.engine) as session:
-    #         try:
-    #             user = session.query(User).filter(User.email == email).one()
-    #             print(f'\n\n\n\n\nUSER {user}\n\n\n')
-    #             if user:
-    #                 return {"status": "403", "msg": "account with that email has been used"}
-    #         except MultipleResultsFound as e:
-    #             print(e)
-    #             return {"status": "403", "msg": "account with that email has been used"}
-    #         except NoResultFound as e:
-    #             print(e)
-    #             print('email not registered')
-    #             user = User(email=email, password=generate_password_hash(password))
-    #             session.add(user)
-    #             session.commit()
-    #         print('after commit')
-    #         return {"status": "201"}
-    #
-    # def login(self, email, password):
-    #     with Session(self.engine) as session:
-    #         user = 'NO USER'
-    #         try:
-    #             # user = session.query(User.email==email).one()
-    #             user = session.query(User).filter(User.email == email).one()
-    #             print(user, "!!!!!!!!!!!!!!!!")
-    #             print('abssssssssssssssssssssssssssssssssssssssss\n\n\n\n\n\n\n\n\n')
-    #             if user:
-    #                 if check_password_hash(user.password, password):
-    #                     return True
-    #             return False
-    #         except NoResultFound as ee:
-    #             print('\n\n\n\n', ee, '\n\n\n\n\n', user)
-    #             return False
+    def add_role(self, name, description):
+        with Session(self.engine) as session:
+            role = session.query(Role).filter(Role.name == name).one()
+            if role:
+                return False
 
-    def add_role(self, role_id, change111111111):
-        pass
+            added_role = Role()
+            added_role.name = name
+            added_role.description = description
+
+            session.add(added_role)
+            session.commit()
+
+            return True
 
     def del_role(self, role_id):
-        pass
+        with Session(self.engine) as session:
+            role = session.query(Role).filter(Role.id == role_id).one()
+            if not role:
+                return False
 
-    def update_role(self, role_id, change111111111):
-        pass
+            session.query(Role).filter(Role.id == role_id).delete()
+
+            return True
+
+    def update_role(self, role_id, name, description):
+        with Session(self.engine) as session:
+            role = session.query(Role).filter(Role.id == role_id).one()
+            if not role:
+                return False
+
+            session.query(Role).filter(Role.id == role_id).delete()
+
+            updated_role = Role()
+            updated_role.id = role_id
+            updated_role.name = name
+            updated_role.description = description
+            updated_role.modified = datetime.utcnow()
+
+            session.add(updated_role)
+            session.commit()
+
+            return True
 
     def show_roles(self):
-        pass
+        with Session(self.engine) as session:
+            data = session.query(Role).all()
+            return data
 
     def user_add_role(self, user_id, role_id):
-        pass
+        with Session(self.engine) as session:
+            user = session.query(User).filter(User.id == user_id).one()
+            role = session.query(Role).filter(Role.id == role_id).one()
+            if not user or not role:
+                return False
+
+            user_add_role = UserRole()
+            user_add_role.user_id = user_id
+            user_add_role.role_id = role_id
+
+            session.add(user_add_role)
+            session.commit()
+
+            return True
 
     def user_remove_role(self, user_id, role_id):
-        pass
+        with Session(self.engine) as session:
+            user = session.query(User).filter(User.id == user_id).one()
+            role = session.query(Role).filter(Role.id == role_id).one()
+            user_role = session.query(UserRole). \
+                filter(UserRole.user_id == user_id,
+                       UserRole.role_id == role_id).one()
+            if not user or not role or not user_role:
+                return False
+
+            session.query(UserRole).filter(UserRole.id == user_role.id).delete()
+
+            return True
 
     def user_check_role(self, user_id, role_id):
-        pass
+        with Session(self.engine) as session:
+            user = session.query(User).filter(User.id == user_id).one()
+            role = session.query(Role).filter(Role.id == role_id).one()
+            user_role = session.query(UserRole). \
+                filter(UserRole.user_id == user_id,
+                       UserRole.role_id == role_id).one()
+            if not user or not role or not user_role:
+                return False
+
+            return True

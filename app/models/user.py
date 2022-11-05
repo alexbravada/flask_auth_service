@@ -42,8 +42,8 @@ class LoginRecord(DefaultMixin, Base):
 class User(DefaultMixin, Base):
     __tablename__ = 'user_info'
     email = Column(String(256), unique=True, nullable=False)
-    first_name = Column(String(256), nullable=False)
-    last_name = Column(String(256), nullable=False)
+    first_name = Column(String(256), nullable=True)
+    last_name = Column(String(256), nullable=True)
     password = Column(String(512), nullable=False)
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)

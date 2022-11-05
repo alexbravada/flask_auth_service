@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from datetime import timedelta
-import imp
 from urllib import response
 
 from flask import Flask
@@ -24,9 +23,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 #from models.user import engine
 #from models.user import User
 
-from db.connect import PostgresService
-
-
+from db.user_service import UserService
+from api import api_blueprint
 
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'changeme'
@@ -45,7 +43,7 @@ jwt = JWTManager(app)
 
 # print(engine)
 
-#app.register_blueprint()
+app.register_blueprint(api_blueprint)
 
 class AbstractCacheStorage(ABC):
     @abstractmethod
@@ -65,8 +63,8 @@ class AbstractCacheStorage(ABC):
 
 @app.route("/auth/signin", methods=['POST'])
 def sign_in():
-    '''
-        curl -X POST -H "Content-Type: application/json" -d '{"login":"test_user", "password":"123"}' http://127.0.0.1:5000/auth/signin
+    '''curl -X POST -H "Content-Type: application/json" -d '{"email":"test_user", "password":"123"}' http://127.0.0.1:5000/api/v1/auth/signin
+        curl -X POST -H "Content-Type: application/json" -d '{"email":"test_user", "password":"123"}' http://127.0.0.1:5000/auth/signin
         url = "http://localhost:8080"
         data = {'email': 'Alice', 'password': 'ChangeMe'}
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
@@ -80,7 +78,7 @@ def sign_in():
     #auth = Auth()
     #response = auth.login(login, password)
 
-    db = PostgresService()
+    db = UserService()
     print('bla bla bla')
     res = db.login(email, password)
     if not res:
@@ -106,7 +104,7 @@ def sign_up():
     email = result.get('email')
     password = result.get('password')
     print(email)
-    db = PostgresService()
+    db = UserService()
     response = db.register(email, password)
     print('resp sttttttaaaa: ', response.get('status'))
     if response.get('status') == '201':

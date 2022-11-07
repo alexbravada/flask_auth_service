@@ -10,7 +10,8 @@ from sqlalchemy import MetaData
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship
-from app.config.settings import Settings
+from config.settings import Settings
+
 
 settings = Settings()
 

@@ -1,5 +1,5 @@
 from redis_base import RedisStorage
-from app.db.redis_base import AbstractCacheStorage
+from db.redis_base import AbstractCacheStorage
 
 
 class TokenStoreService:

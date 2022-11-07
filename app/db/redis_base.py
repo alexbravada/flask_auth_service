@@ -1,6 +1,5 @@
 import abc
-import redis
-from app.config.settings import Settings
+from config.settings import Settings
 
 
 SETTINGS = Settings()
@@ -16,7 +15,16 @@ class AbstractCacheStorage(abc.ABC):
         pass
 
 
-class RedisStorage(AbstractCacheStorage):
-    def __init__(self):
-        redis = redis.Redis(**SETTINGS.Redis.dict(), decode_responses=True)
+# class AbstractCacheStorage(ABC):
+#     @abstractmethod
+#     def get(self, key: str, **kwargs):
+#         pass
+
+#     @abstractmethod
+#     def set(self, key: str, value: str, expire: int, **kwargs):
+#         pass
+
+# class RedisStorage(AbstractCacheStorage):
+#     def __init__(self):
+#         redis = redis.Redis(**SETTINGS.Redis.dict(), decode_responses=True)
         

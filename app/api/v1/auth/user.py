@@ -69,6 +69,21 @@ def sign_up():
         return jsonify(response), 403
 
 
+@user_bp.route('/logout', methods=['POST'])
+def logout():
+    refresh_t = request.headers['Authorization']
+    access_t = request.json.get('access_token')
+    # TODO put them into Redis Black-list
+    return {}
+
+
+@user_bp.route('/change_password', methods=['POST'])
+@jwt_required(locations=['headers'])
+def logout():
+    access_t = request.json.get('password')
+    # TODO put them into Redis Black-list
+    return {}
+
 @user_bp.route('/access', methods=['POST'])
 @jwt_required(locations=['headers'])
 def access():

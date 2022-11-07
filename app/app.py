@@ -147,8 +147,7 @@ def add_role():
     name = result.get('name')
     description = result.get('description')
     db = RoleService()
-    response_inner = db.add_role(name, description)
-    return jsonify(response_inner), 201
+    return db.add_role(name, description)
 
 
 @app.route('/api/v1/role/delete', methods=['POST'])
@@ -156,15 +155,15 @@ def delete_role():
     result = request.json
     role_id = result.get('id')
     db = RoleService()
-    response_inner = db.del_role(role_id)
-    return jsonify(response_inner), 201
+    return db.del_role(role_id)
 
 
 @app.route('/api/v1/role/show_all', methods=['POST', 'GET'])
 def show_roles_all():
     db = RoleService()
     response_inner = [x.as_dict for x in db.show_all_roles()]
-    return jsonify(response_inner), 200
+    return jsonify(response_inner)
+
 
 @app.route('/api/v1/role/show', methods=['POST', 'GET'])
 def show_role():
@@ -172,7 +171,15 @@ def show_role():
     role_id = result.get('id')
     db = RoleService()
     response_inner = [x.as_dict for x in db.show_role(role_id)]
-    return jsonify(response_inner), 200
+    return jsonify(response_inner)
+
+
+@app.route('/api/v1/role/user_role_show_all', methods=['POST', 'GET'])
+def show_role():
+    db = RoleService()
+    response_inner = [x.as_dict for x in db.user_role_show_all()]
+    return jsonify(response_inner)
+
 
 @app.route('/api/v1/role/update', methods=['POST'])
 def update_role():
@@ -183,6 +190,7 @@ def update_role():
     db = RoleService()
     return db.update_role(role_id, name, description)
 
+
 @app.route('/api/v1/role/user_role_add', methods=['POST'])
 def user_add_role():
     result = request.json
@@ -191,13 +199,25 @@ def user_add_role():
     db = RoleService()
     return db.user_add_role(user_id, role_id)
 
-@app.route('/api/v1/role/user_role_check', methods=['POST'])
+
+@app.route('/api/v1/role/user_role_show', methods=['POST'])
 def user_check_role():
     result = request.json
     user_id = result.get('user_id')
     role_id = result.get('role_id')
     db = RoleService()
-    return db.user_check_role(user_id, role_id)
+    response_inner = [x.as_dict for x in db.user_check_role(user_id, role_id)]
+    return jsonify(response_inner)
+
+
+@app.route('/api/v1/role/user_role_delete', methods=['POST'])
+def user_role_remove():
+    result = request.json
+    user_id = result.get('user_id')
+    role_id = result.get('role_id')
+    db = RoleService()
+    return db.user_remove_role(user_id, role_id)
+
 
 if __name__ == '__main__':
     app.run(

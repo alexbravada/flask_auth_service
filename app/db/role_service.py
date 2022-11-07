@@ -104,47 +104,43 @@ class RoleService(PostgresService):
                 return f'user_role row with user_id={user_id}, role_id={role_id} created'
 
     def user_remove_role(self, user_id, role_id):
-        # TODO: delete relationships objects
         with Session(self.engine) as session:
             if not user_id or not role_id:
-                return False
+                raise BadRequest(description=f''''user_id' and 'role_id' must be specified''')
 
             try:
-                user = session.query(User).filter(User.id == user_id).one()
+                user_role = session.query(UserRole). \
+                    filter(UserRole.user_id == user_id,
+                           UserRole.role_id == role_id).one()
+                session.query(UserRole).filter(UserRole.id == user_role.id).delete()
+                session.commit()
+                return f'UserRole with id={user_role.id} deleted'
             except NoResultFound:
-                return False
-            try:
-                role = session.query(Role).filter(Role.id == role_id).one()
-            except NoResultFound:
-                return False
-            user_role = session.query(UserRole). \
-                filter(UserRole.user_id == user_id,
-                       UserRole.role_id == role_id).one()
-
-            if not user or not role or not user_role:
-                return False
-
-            session.query(UserRole).filter(UserRole.id == user_role.id).delete()
-
-            return True
+                raise BadRequest(
+                    description=f'''UserRole with 'user_id'={user_id}, 'role_id'={role_id} doesn't exist''')
 
     def user_check_role(self, user_id, role_id):
         with Session(self.engine) as session:
-            try:
-                user = session.query(User).filter(User.id == user_id).one()
-            except NoResultFound:
-                raise BadRequest(description=f'''User with id={user_id} doesn't exist''')
-
-            try:
-                role = session.query(Role).filter(Role.id == role_id).one()
-            except NoResultFound:
-                raise BadRequest(description=f'''Role with id={role_id} doesn't exist''')
+            # try:
+            #     user = session.query(User).filter(User.id == user_id).one()
+            # except NoResultFound:
+            #     raise BadRequest(description=f'''User with id={user_id} doesn't exist''')
+            #
+            # try:
+            #     role = session.query(Role).filter(Role.id == role_id).one()
+            # except NoResultFound:
+            #     raise BadRequest(description=f'''Role with id={role_id} doesn't exist''')
+            # TODO: это надо убрать, но нужно сделать каскадное удаление в таблице user__role при удалении user или role соответствующих
 
             try:
                 user_role = session.query(UserRole).filter(
                     UserRole.user_id == user_id,
                     UserRole.role_id == role_id).one()
-                return f'user_role row with user_id={user_id}, role_id={role_id} exist'
+                return user_role
             except NoResultFound:
                 raise BadRequest(
                     description=f'''user_role row with user_id={user_id}, role_id={role_id} doesn't exist''')
+
+    def user_role_show_all(self):
+        with Session(self.engine) as session:
+            return session.query(UserRole).all()

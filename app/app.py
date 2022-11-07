@@ -19,6 +19,7 @@ from flask_jwt_extended import jwt_required, get_jwt
 from flask_jwt_extended import get_jwt_identity
 
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.exceptions import HTTPException
 
 # from models.user import engine
 # from models.user import User
@@ -188,8 +189,15 @@ def user_add_role():
     user_id = result.get('user_id')
     role_id = result.get('role_id')
     db = RoleService()
-    answer = db.user_add_role(user_id, role_id)
-    return str(answer)
+    return db.user_add_role(user_id, role_id)
+
+@app.route('/api/v1/role/user_role_check', methods=['POST'])
+def user_check_role():
+    result = request.json
+    user_id = result.get('user_id')
+    role_id = result.get('role_id')
+    db = RoleService()
+    return db.user_check_role(user_id, role_id)
 
 if __name__ == '__main__':
     app.run(

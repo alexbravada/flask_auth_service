@@ -10,7 +10,9 @@ from sqlalchemy import MetaData
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declared_attr
 from config.settings import Settings
+
 
 
 settings = Settings()
@@ -27,10 +29,17 @@ metadata_obj = MetaData()
 
 
 class DefaultMixin:
+    @declared_attr
+    def __tablename__(cls):
+        return cls.__name__.lower()
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     created = Column(DateTime(), nullable=False, default=datetime.datetime.utcnow())
     modified = Column(DateTime(), nullable=True)
 
+    @property
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 class LoginRecord(DefaultMixin, Base):
     __tablename__ = 'login_history'
@@ -41,6 +50,8 @@ class LoginRecord(DefaultMixin, Base):
 
     def __repr__(self):
         return f'LoginRecord(id={self.id!r}, login_time={self.login_time!r}, useragent={self.useragent!r})'
+
+
 
 
 class User(DefaultMixin, Base):

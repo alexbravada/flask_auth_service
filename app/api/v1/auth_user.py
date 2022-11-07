@@ -11,7 +11,6 @@ from flask_jwt_extended import verify_jwt_in_request
 from flask_jwt_extended import jwt_required, get_jwt
 from flask_jwt_extended import get_jwt_identity
 
-from api.v1.auth import user_bp
 from db.user_service import UserService
 
 
@@ -77,7 +76,7 @@ def sign_up():
         return jsonify(response), 403
 
 
-@user_bp.route('/access', methods=['POST'])
+@auth_user_bp.route('/access', methods=['POST'])
 @jwt_required(locations=['headers'])
 def access():
     return jsonify({'deprecated': 'use routes: /api/v1/auth/user/ : signin, signout, refresh, access'}), 401

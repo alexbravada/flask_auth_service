@@ -1,10 +1,10 @@
 from datetime import timedelta
-from sqlalchemy import create_engine
 from typing import Literal, Optional
 
 from pydantic import BaseSettings, BaseModel, AnyUrl
 import os
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
@@ -25,19 +25,14 @@ class RedisDSN(BaseModel):
 
 class Settings(BaseSettings):
     PG: PGDSN = PGDSN()
-    #Redis: RedisDSN
+    Redis: RedisDSN
     PG_CONNECT_STRING: AnyUrl = f'postgresql+psycopg2://{PG.user}:{PG.password}@0.0.0.0:{PG.port}/{PG.dbname}'
-    # PG_ENGINE = create_engine(
-    #                             PG_CONNECT_STRING,
-    #                             isolation_level = "REPEATABLE READ",
-    #                             echo=True
-    #                         )
     ACCESS_TOKEN_TTL = timedelta(minutes=10)
     REFRESH_TOKEN_TTL = timedelta(days=30)
 
     # LOG_LEVEL: Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'] = 'INFO'
     class Config:
-        env_file = '.dev_env'
+        env_file = 'dev.env'
         env_file_encoding = 'utf-8'
         env_nested_delimiter = '_'
 

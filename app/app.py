@@ -20,15 +20,16 @@ from flask_jwt_extended import get_jwt_identity
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-#from models.user import engine
-#from models.user import User
+# from models.user import engine
+# from models.user import User
 
 from db.user_service import UserService
+from db.role_service import RoleService
 from api import api_blueprint
 
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'changeme'
-#SECRET_KEY = 'changeme'
+# SECRET_KEY = 'changeme'
 jwt = JWTManager(app)
 
 'FLASK_APP=wsgi_app flask run --with-threads --reload'
@@ -44,6 +45,7 @@ jwt = JWTManager(app)
 # print(engine)
 
 app.register_blueprint(api_blueprint)
+
 
 class AbstractCacheStorage(ABC):
     @abstractmethod
@@ -69,14 +71,14 @@ def sign_in():
         data = {'email': 'Alice', 'password': 'ChangeMe'}
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     '''
-    result = request.json # or result = request.get_json(force=True)
+    result = request.json  # or result = request.get_json(force=True)
     email = result.get('email')
     password = result.get('password')
     # token = result.get('access_token')
-    #return jsonify({'email': login, 'pass': password}), 200
+    # return jsonify({'email': login, 'pass': password}), 200
     #     return jsonify({"msg": "Bad username or password"}), 401
-    #auth = Auth()
-    #response = auth.login(login, password)
+    # auth = Auth()
+    # response = auth.login(login, password)
 
     db = UserService()
     print('bla bla bla')
@@ -100,7 +102,7 @@ def sign_in():
 @app.route('/auth/signup', methods=['POST'])
 def sign_up():
     '''curl -X POST -H "Content-Type: application/json" -d '{"email":"test_user", "password":"123"}' http://127.0.0.1:5000/auth/signup'''
-    result = request.json # or result = request.get_json(force=True)
+    result = request.json  # or result = request.get_json(force=True)
     email = result.get('email')
     password = result.get('password')
     print(email)
@@ -109,7 +111,7 @@ def sign_up():
     print('resp sttttttaaaa: ', response.get('status'))
     if response.get('status') == '201':
         return jsonify(response), 201
-    else: 
+    else:
         return jsonify(response), 403
 
 
@@ -120,6 +122,8 @@ def refresh():
     print(get_jwt())
     print('eto AUTH TOK', request.headers['Authorization'])
     return {}
+
+
 # curl -X POST -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2Njg4MTgxMiwianRpIjoiNDU0ODdkZmItYjE4NS00NmVmLTkxNDMtY2Y0OTYxZmIwNDNhIiwidHlwZSI6InJlZnJlc2giLCJzdWIiOiI5NzQ1NzZ1aTRkZ2ZnZGZnZCIsIm5iZiI6MTY2Njg4MTgxMiwiZXhwIjoxNjY5NDczODEyfQ.vQrs7N3p-QIFBFidL4jrdzqvnOnbhX7ARW0aiAXfVzs"
 #      -d '{"login":"NOtoken", "password": "ssss", "access_token":"fsdfsd" }' http://127.0.0.1:5000/auth
 # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2Njg4MTgxMiwianRpIjoiNDU0ODdkZmItYjE4NS00NmVmLTkxNDMtY2Y0OTYxZmIwNDNhIiwidHlwZSI6InJlZnJlc2giLCJzdWIiOiI5NzQ1NzZ1aTRkZ2ZnZGZnZCIsIm5iZiI6MTY2Njg4MTgxMiwiZXhwIjoxNjY5NDczODEyfQ.vQrs7N3p-QIFBFidL4jrdzqvnOnbhX7ARW0aiAXfVzs
@@ -135,6 +139,57 @@ def refresh():
 #     print(request.json)
 #     return {}
 
+@app.route("/api/v1/role/add", methods=['POST'])
+def add_role():
+    '''curl -X POST -H "Content-Type: application/json" -d '{"name":"role_name", "description":"descrip"}' http://127.0.0.1:5000/api/v1/role/add'''
+    result = request.json
+    name = result.get('name')
+    description = result.get('description')
+    db = RoleService()
+    response_inner = db.add_role(name, description)
+    return jsonify(response_inner), 201
+
+
+@app.route('/api/v1/role/delete', methods=['POST'])
+def delete_role():
+    result = request.json
+    role_id = result.get('id')
+    db = RoleService()
+    response_inner = db.del_role(role_id)
+    return jsonify(response_inner), 201
+
+
+@app.route('/api/v1/role/show_all', methods=['POST', 'GET'])
+def show_roles_all():
+    db = RoleService()
+    response_inner = [x.as_dict for x in db.show_all_roles()]
+    return jsonify(response_inner), 200
+
+@app.route('/api/v1/role/show', methods=['POST', 'GET'])
+def show_role():
+    result = request.json
+    role_id = result.get('id')
+    db = RoleService()
+    response_inner = [x.as_dict for x in db.show_role(role_id)]
+    return jsonify(response_inner), 200
+
+@app.route('/api/v1/role/update', methods=['POST'])
+def update_role():
+    result = request.json
+    role_id = result.get('id')
+    name = result.get('name')
+    description = result.get('description')
+    db = RoleService()
+    return db.update_role(role_id, name, description)
+
+@app.route('/api/v1/role/user_role_add', methods=['POST'])
+def user_add_role():
+    result = request.json
+    user_id = result.get('user_id')
+    role_id = result.get('role_id')
+    db = RoleService()
+    answer = db.user_add_role(user_id, role_id)
+    return str(answer)
 
 if __name__ == '__main__':
     app.run(

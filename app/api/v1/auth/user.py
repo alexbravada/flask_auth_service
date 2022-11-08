@@ -14,8 +14,8 @@ from flask_jwt_extended import get_jwt_identity
 
 from db.user_service import UserService
 from db.token_store_service import TokenStoreService
-#from models.user import engine
-#from models.user import User
+from db.redis_base import AbstractCacheStorage
+from db.token_store_service import get_token_store_service
 
 
 user_bp = Blueprint('user', __name__, url_prefix='/user')
@@ -71,15 +71,17 @@ def sign_up():
 
 
 @user_bp.route('/logout', methods=['POST'])
-def logout():
+def logout(token_store_service: AbstractCacheStorage = get_token_store_service()):
     '''curl -X POST -H "Content-Type: application/json" -d '{"email":"test_user", "password":"123"}' http://127.0.0.1:5000/api/v1/auth/user/logout'''
     #refresh_t = request.headers['Authorization']
     #access_t = request.json.get('access_token')
     # TODO put them into Redis Black-list
-    cache = TokenStoreService()
-    cache.add_to_blacklist('user1', {"body": "token"}, datetime.timedelta(seconds=100))
+    #cache = TokenStoreService()
+    #cache.add_to_blacklist('user1', {"body": "token"}, datetime.timedelta(seconds=100))
+    token_store_service.add_to_blacklist('user1', {"body": "token"}, datetime.timedelta(seconds=100))
     print('zapisal')
-    token_in = json.loads(cache.check_blacklist('user1'))
+    #token_in = json.loads(cache.check_blacklist('user1'))
+    token_in = json.loads(token_store_service.check_blacklist('user1'))
     #return {"token": str(token_in)}
     return jsonify(token_in), 200
 

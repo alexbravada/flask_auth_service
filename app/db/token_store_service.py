@@ -3,14 +3,16 @@ from db.redis_base import RedisStorage
 from db.redis_base import AbstractCacheStorage
 from db.redis_base import get_redis
 import json
+from functools import lru_cache
+import redis
+
 
 #class TokenStoreService(RedisStorage):
 class TokenStoreService:
-    def __init__(self):
+    def __init__(self, repository: AbstractCacheStorage):
         #self.storage: AbstractCacheStorage = super().__init__()
-        self.storage = get_redis()
-        #print('\n\n\n\n', self.storage.redis.set('t1', 't2', ex=datetime.timedelta(seconds=66)))
-    
+        #self.storage = RedisStorage(conn = get_redis())
+        self.storage = repository
     def add_to_blacklist(self, token, body, expired_time=1800):
         TTL = expired_time 
         self.storage.set(token, json.dumps(body), ex=datetime.timedelta(seconds=60))
@@ -24,11 +26,18 @@ class TokenStoreService:
     
     def set_user_payload(self):
         '''username: {
-            "refresh": [refreshes] # max_len == 10,
-            "payload": {"name": Alex}
+            "refresh": [refreshes] # max_len == 10,
+            "payload": {"name": Alex}
         }
 '''
         pass
     
     def get_user_payload(self):
         pass
+
+
+@lru_cache()
+def get_token_store_service(
+    storage: redis.Redis = get_redis()
+) -> TokenStoreService:
+    return TokenStoreService(storage) 

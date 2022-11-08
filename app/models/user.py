@@ -14,7 +14,6 @@ from sqlalchemy.ext.declarative import declared_attr
 from config.settings import Settings
 
 
-
 settings = Settings()
 
 db_connection_string = settings.PG_CONNECT_STRING # 'postgresql+psycopg2://user:123qwe@0.0.0.0:5432/db_users'
@@ -50,8 +49,6 @@ class LoginRecord(DefaultMixin, Base):
 
     def __repr__(self):
         return f'LoginRecord(id={self.id!r}, login_time={self.login_time!r}, useragent={self.useragent!r})'
-
-
 
 
 class User(DefaultMixin, Base):

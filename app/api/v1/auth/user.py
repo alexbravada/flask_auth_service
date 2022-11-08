@@ -79,7 +79,7 @@ def logout():
 
 @user_bp.route('/change_password', methods=['POST'])
 @jwt_required(locations=['headers'])
-def logout():
+def change_pwd():
     access_t = request.json.get('password')
     # TODO put them into Redis Black-list
     return {}

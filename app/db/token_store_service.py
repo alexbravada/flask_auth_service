@@ -1,5 +1,5 @@
 import datetime
-from redis_base import RedisStorage
+from db.redis_base import RedisStorage
 from db.redis_base import AbstractCacheStorage
 
 
@@ -8,12 +8,13 @@ class TokenStoreService(RedisStorage):
         self.storage: AbstractCacheStorage = super().__init__()
         #print('\n\n\n\n', self.storage.redis.set('t1', 't2', ex=datetime.timedelta(seconds=66)))
     
-    def add_to_blacklist(self, token, expired_time):
+    def add_to_blacklist(self, token, body, expired_time=1800):
         TTL = expired_time 
-        self.storage.set(token, "TTL")
-        
+        self.storage.set(token, json.dumps(body), ex=datetime.timedelta(seconds=60))
+
     def check_blacklist(self, token):
         token = self.store.get(token)
+        return token
 
     def add_user_refresh(self, user, refresh):
         pass

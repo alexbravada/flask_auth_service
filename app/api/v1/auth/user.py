@@ -1,6 +1,7 @@
-from datetime import timedelta
+import datetime
 from pprint import pprint
 
+import json
 from flask import Blueprint
 from flask import request
 from flask import jsonify
@@ -12,7 +13,7 @@ from flask_jwt_extended import jwt_required, get_jwt
 from flask_jwt_extended import get_jwt_identity
 
 from db.user_service import UserService
-
+from db.token_store_service import TokenStoreService
 #from models.user import engine
 #from models.user import User
 
@@ -71,10 +72,15 @@ def sign_up():
 
 @user_bp.route('/logout', methods=['POST'])
 def logout():
-    refresh_t = request.headers['Authorization']
-    access_t = request.json.get('access_token')
+    '''curl -X POST -H "Content-Type: application/json" -d '{"email":"test_user", "password":"123"}' http://127.0.0.1:5000/api/v1/auth/user/logout'''
+    #refresh_t = request.headers['Authorization']
+    #access_t = request.json.get('access_token')
     # TODO put them into Redis Black-list
-    return {}
+    cache = TokenStoreService()
+    cache.add_to_blacklist('user1', {"body": "token"}, datetime.timedelta(seconds=100))
+    print('zapisal')
+    token_in = cache.check_blacklist('user1')
+    return {"token": str(token_in)}
 
 
 @user_bp.route('/change_password', methods=['POST'])

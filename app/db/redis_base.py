@@ -1,11 +1,13 @@
-import abc
+from abc import ABC
+from abc import abstractmethod
 from config.settings import Settings
 import redis
+
 
 SETTINGS = Settings()
 
 
-class AbstractCacheStorage(abc.ABC):
+class AbstractCacheStorage(ABC):
     @abstractmethod
     def get():
         pass

@@ -9,11 +9,11 @@ SETTINGS = Settings()
 
 class AbstractCacheStorage(ABC):
     @abstractmethod
-    def get():
+    def get(self, key: str, **kwargs):
         pass
 
     @abstractmethod
-    def set():
+    def set(self, key: str, value: str, expire: int, **kwargs):
         pass
 
 

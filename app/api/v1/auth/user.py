@@ -79,9 +79,9 @@ def logout():
     cache = TokenStoreService()
     cache.add_to_blacklist('user1', {"body": "token"}, datetime.timedelta(seconds=100))
     print('zapisal')
-    token_in = cache.check_blacklist('user1')
-    return {"token": str(token_in)}
-
+    token_in = json.loads(cache.check_blacklist('user1'))
+    #return {"token": str(token_in)}
+    return jsonify(token_in), 200
 
 @user_bp.route('/change_password', methods=['POST'])
 @jwt_required(locations=['headers'])

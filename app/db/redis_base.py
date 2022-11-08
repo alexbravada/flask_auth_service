@@ -29,3 +29,6 @@ class AbstractCacheStorage(ABC):
 class RedisStorage(AbstractCacheStorage):
     def __init__(self):
         self.redis = redis.Redis(**SETTINGS.Redis.dict(), decode_responses=True)
+
+def get_redis():
+    return redis.Redis(**SETTINGS.Redis.dict(), decode_responses=True)

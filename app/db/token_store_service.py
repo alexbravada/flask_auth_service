@@ -1,11 +1,14 @@
 import datetime
 from db.redis_base import RedisStorage
 from db.redis_base import AbstractCacheStorage
+from db.redis_base import get_redis
+import json
 
-
-class TokenStoreService(RedisStorage):
+#class TokenStoreService(RedisStorage):
+class TokenStoreService:
     def __init__(self):
-        self.storage: AbstractCacheStorage = super().__init__()
+        #self.storage: AbstractCacheStorage = super().__init__()
+        self.storage = get_redis()
         #print('\n\n\n\n', self.storage.redis.set('t1', 't2', ex=datetime.timedelta(seconds=66)))
     
     def add_to_blacklist(self, token, body, expired_time=1800):
@@ -13,7 +16,7 @@ class TokenStoreService(RedisStorage):
         self.storage.set(token, json.dumps(body), ex=datetime.timedelta(seconds=60))
 
     def check_blacklist(self, token):
-        token = self.store.get(token)
+        token = self.storage.get(token)
         return token
 
     def add_user_refresh(self, user, refresh):

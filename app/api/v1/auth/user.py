@@ -44,8 +44,8 @@ def sign_in():
         payload = dict()
         payload['email'] = email
         payload['admin'] = True
-        exp_delta = timedelta(minutes=10)
-        exp_refresh_delta = timedelta(days=30)
+        exp_delta = datetime.timedelta(minutes=10)
+        exp_refresh_delta = datetime.timedelta(days=30)
         access_token = create_access_token(email, additional_claims=payload, expires_delta=exp_delta)
         refresh_token = create_refresh_token(email, expires_delta=exp_refresh_delta)
         response['access_token'] = access_token
@@ -78,7 +78,13 @@ def logout(token_store_service: AbstractCacheStorage = get_token_store_service()
     # TODO put them into Redis Black-list
     #cache = TokenStoreService()
     #cache.add_to_blacklist('user1', {"body": "token"}, datetime.timedelta(seconds=100))
-    token_store_service.add_to_blacklist('user1', {"body": "token"}, datetime.timedelta(seconds=100))
+    jwt = get_jwt()
+    now = datetime.datetime.timestamp()
+    exp = jwt.get('exp')
+    total = exp - now
+    if total > 0:
+        ttl = datetime.timedelta(seconds=total)
+        token_store_service.add_to_blacklist('user1', {"body": "token"}, datetime.timedelta(seconds=100))
     print('zapisal')
     #token_in = json.loads(cache.check_blacklist('user1'))
     token_in = json.loads(token_store_service.check_blacklist('user1'))
@@ -95,9 +101,11 @@ def change_pwd():
 @user_bp.route('/access', methods=['POST'])
 @jwt_required(locations=['headers'])
 def access():
-    ''' curl -X POST -H "Authorization: Bearer <refresh_token>" '''
-    print(get_jwt())
-    print('eto Access TOK', request.headers['Authorization'])
+    ''' curl -X POST -H "Authorization: Bearer <refresh_token>" http://127.0.0.1:5000/api/v1/auth/user/access'''
+    #print(get_jwt())
+    #print('eto Access TOK', request.headers['Authorization'])
+    jwt = get_jwt()
+    print('eto timestamp', jwt.get('exp'))
     return {}
 
 
@@ -105,7 +113,13 @@ def access():
 @user_bp.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True, locations=['headers'])
 def refresh():
-    ''' curl -X POST -H "Authorization: Bearer <refresh_token>" '''
+    ''' curl -X POST -H "Authorization: Bearer <refresh_token>" -H "Content-Type: application/json" -d '{"access_token": <access_token>}' http://127.0.0.1:5000/api/v1/auth/user/refresh
+    '''
     print(get_jwt())
-    print('eto Refresh TOK', request.headers['Authorization'])
+    #print('eto Refresh TOK', request.headers['Authorization'])
+    access_token = request.json.get('access_token')
+    jwt = get_jwt()
+    ttl = jwt.get('exp')
+    # TODO check access
+    # TODO что то сделать с payload
     return {}

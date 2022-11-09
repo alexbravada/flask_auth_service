@@ -84,7 +84,7 @@ def logout(token_store_service: AbstractCacheStorage = get_token_store_service()
     total = exp - now
     if total > 0:
         ttl = datetime.timedelta(seconds=total)
-        token_store_service.add_to_blacklist('user1', {"body": "token"}, datetime.timedelta(seconds=100))
+        token_store_service.add_to_blacklist('user1', {"body": "token"}, ttl)
     print('zapisal')
     #token_in = json.loads(cache.check_blacklist('user1'))
     token_in = json.loads(token_store_service.check_blacklist('user1'))

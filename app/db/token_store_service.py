@@ -13,9 +13,8 @@ class TokenStoreService:
         #self.storage: AbstractCacheStorage = super().__init__()
         #self.storage = RedisStorage(conn = get_redis())
         self.storage = repository
-    def add_to_blacklist(self, token, body, expired_time=1800):
-        TTL = expired_time 
-        self.storage.set(token, json.dumps(body), ex=datetime.timedelta(seconds=60))
+    def add_to_blacklist(self, token, body, ttl=600):
+        self.storage.set(token, json.dumps(body), ex=datetime.timedelta(seconds=ttl))
 
     def check_blacklist(self, token):
         token = self.storage.get(token)

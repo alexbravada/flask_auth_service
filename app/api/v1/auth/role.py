@@ -60,9 +60,17 @@ def show_roles_all():
 
 
 @role_bp.route('/<int:role_id>', methods=['GET'])
-def show_role(role_id):
+def show_role_by_id(role_id):
     db = RoleService()
-    response_inner = [db.show_role(role_id).as_dict]
+    response_inner = [db.show_role_by_id(role_id).as_dict]
+    return jsonify({'role': response_inner})
+
+
+@role_bp.route('/by_name', methods=['GET'])
+def show_role_by_name():
+    role_name = request.args.get('name')
+    db = RoleService()
+    response_inner = [db.show_role_by_name(role_name).as_dict]
     return jsonify({'role': response_inner})
 
 

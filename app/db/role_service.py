@@ -77,11 +77,20 @@ class RoleService(PostgresService):
         with Session(self.engine) as session:
             return session.query(Role).all()
 
-    def show_role(self, role_id):
+    def show_role_by_id(self, role_id):
         with Session(self.engine) as session:
             try:
                 return session.query(Role).filter(Role.id == role_id).one()
             except NoResultFound:
+                abort(404)
+
+    def show_role_by_name(self, role_name):
+        with Session(self.engine) as session:
+            try:
+                return session.query(Role).filter(Role.name == role_name).one()
+            except NoResultFound:
+                abort(404)
+            except MultipleResultsFound:
                 abort(404)
 
     def user_add_role(self, user_id, role_id):

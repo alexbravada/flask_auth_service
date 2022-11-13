@@ -58,17 +58,12 @@ def sign_in():
 @user_bp.route('/signup', methods=['POST'])
 def sign_up():
     '''curl -X POST -H "Content-Type: application/json" -d '{"email":"test_user", "password":"123"}' http://127.0.0.1:5000/api/v1/auth/user/signup'''
-    result = request.json # or result = request.get_json(force=True)
+    result = request.json
     email = result.get('email')
     password = result.get('password')
-    print(email)
     db = UserService()
-    response = db.register(email, password)
-    print('resp sttttttaaaa: ', response.get('status'))
-    if response.get('status') == '201':
-        return jsonify(response), 201
-    else: 
-        return jsonify(response), 403
+    response_inner = [db.register(email, password).as_dict]
+    return jsonify({'registered user': response_inner}), 201
 
 
 @user_bp.route('/logout', methods=['POST'])

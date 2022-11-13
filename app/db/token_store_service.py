@@ -9,12 +9,12 @@ import redis
 
 #class TokenStoreService(RedisStorage):
 class TokenStoreService:
-    def __init__(self, repository: AbstractCacheStorage):
+    def __init__(self, storage: AbstractCacheStorage):
         #self.storage: AbstractCacheStorage = super().__init__()
         #self.storage = RedisStorage(conn = get_redis())
-        self.storage = repository
-    def add_to_blacklist(self, token, body, ttl=600):
-        self.storage.set(token, json.dumps(body), ex=datetime.timedelta(seconds=ttl))
+        self.storage = storage
+    def add_to_blacklist(self, token: str, value: str = "True", ttl: int = 600):
+        self.storage.set(token, value=value, ex=datetime.timedelta(seconds=ttl))
 
     def check_blacklist(self, token):
         token = self.storage.get(token)

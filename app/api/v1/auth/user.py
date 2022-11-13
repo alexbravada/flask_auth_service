@@ -72,31 +72,27 @@ def sign_up():
 
 
 @user_bp.route('/logout', methods=['POST'])
-@jwt_required(locations=['headers'])
+@jwt_required(refresh=True, locations=['headers'])
 def logout(token_store_service: AbstractCacheStorage = get_token_store_service()):
-    '''curl -X POST -H "Authorization: Bearer <access_token>" -H "Content-Type: application/json" -d '{"refresh_token": "322"}' http://127.0.0.1:5000/api/v1/auth/user/logout'''
-    #refresh_t = request.headers['Authorization']
-    #access_t = request.json.get('access_token')
-    # TODO put them into Redis Black-list
-    #cache = TokenStoreService()
-    #cache.add_to_blacklist('user1', {"body": "token"}, datetime.timedelta(seconds=100))
+    '''curl -X POST -H "Authorization: Bearer <refresh_token>" -H "Content-Type: application/json" -d '{"access_token": "322"}' http://127.0.0.1:5000/api/v1/auth/user/logout'''
+    access_token = request.json.get('access_token')
     jwt = get_jwt()
     now = int(time.time())
-    print('aaa', now)
-    exp = jwt.get('exp')
-    print('exp', exp)
-    #email = jwt.get('email')
-    jti = jwt.get('jti')
-    ttl = exp - now
-    print('TTL', ttl)
-    if ttl > 0:
+    refresh_exp = jwt.get('exp')
+    refresh_token = request.headers['Authorization']
+    refresh_ttl = refresh_exp - now
+    if refresh_ttl > 0:
         #ttl = datetime.timedelta(seconds=total)
-        token_store_service.add_to_blacklist(jti, {"body": "token"}, ttl=ttl)
+        token_store_service.add_to_blacklist(refresh_token, ttl=refresh_ttl)
+    token_store_service.add_to_blacklist(access_token, ttl=600)
     print('zapisal')
-    #token_in = json.loads(cache.check_blacklist('user1'))
-    token_in = json.loads(token_store_service.check_blacklist(jti))
+    token_in = token_store_service.check_blacklist(refresh_token)
+    print(token_store_service.check_blacklist(refresh_token))
+    print(token_store_service.check_blacklist(access_token))
+    print(token_store_service.check_blacklist("random key"))
     #return {"token": str(token_in)}
     return jsonify(token_in), 200
+
 
 @user_bp.route('/change_password', methods=['POST'])
 @jwt_required(locations=['headers'])

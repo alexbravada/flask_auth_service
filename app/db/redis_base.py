@@ -24,8 +24,8 @@ class RedisStorage(AbstractCacheStorage):
     def get(self, key: str):
         return self.redis.get(key)
     
-    def set(self, key, value, expire):
-        self.redis.set(key, value, ex=expire)
+    def set(self, key, value, ex):
+        self.redis.set(key, value, ex=ex)
         
 def get_redis():
     return redis.Redis(**SETTINGS.Redis.dict(), decode_responses=True)

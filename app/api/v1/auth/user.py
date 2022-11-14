@@ -48,7 +48,6 @@ def sign_in():
         refresh_token = create_refresh_token(email, additional_claims=payload, expires_delta=exp_refresh_delta)
         response['access_token'] = access_token
         response['refresh_token'] = refresh_token
-        response['resp'] = f"its from pipeline: {request.url}"
         return jsonify(response), 200
 
 
@@ -160,7 +159,7 @@ def access(token_store_service: AbstractCacheStorage = get_token_store_service()
     print('eto payload email', payload.get('email'))
     blacklist = token_store_service.check_blacklist(token)
     expired = token_store_service.check_logout_email_date(email=email, iat=iat)
-    if not blacklist and expired:
+    if not blacklist and not expired:
         return jsonify({'access': True}), 200
     else:
         return jsonify({'access': False, 'msg': 'Access Token expired'}), 403

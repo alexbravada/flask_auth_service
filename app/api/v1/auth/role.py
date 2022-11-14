@@ -42,7 +42,18 @@ def add_role():
 
 
 @role_bp.route('/delete', methods=['DELETE'])
-def delete_role():
+@jwt_required()
+def delete_role(token_store_service: AbstractCacheStorage = get_token_store_service()):
+    access_token = request.headers['Authorization']
+    payload = get_jwt() # dict
+    email = payload.get('email')
+    iat = payload.get('iat')
+    blacklist = token_store_service.check_blacklist(access_token)
+    expired = token_store_service.check_logout_email_date(email, iat)
+    if not blacklist and not expired:
+        pass
+    else: 
+        abort(403)
     if not request.json or not 'id' in request.json:
         abort(400)
     result = request.json

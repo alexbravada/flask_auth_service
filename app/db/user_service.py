@@ -64,7 +64,6 @@ class UserService(PostgresService):
             return False
 
 
-
     def change_pwd(self, email: str, old_password: str, new_password: str) -> bool:
         with Session(self.engine) as session:
             user = ''

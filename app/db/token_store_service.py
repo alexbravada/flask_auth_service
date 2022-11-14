@@ -32,9 +32,9 @@ class TokenStoreService:
         date = self.check_blacklist(email)
         print(f'date {date} iat {iat}')
         if date and iat <= int(date):
-            return False
-        else: 
             return True
+        else: 
+            return False
 
 
 @lru_cache()

@@ -13,6 +13,7 @@ from flask_jwt_extended import jwt_required, get_jwt
 from flask_jwt_extended import get_jwt_identity
 
 from db.role_service import RoleService
+from db.token_store_service import AbstractCacheStorage, get_token_store_service
 
 role_bp = Blueprint('role', __name__, url_prefix='/role')
 

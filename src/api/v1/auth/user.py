@@ -1,20 +1,14 @@
 import datetime
-from pprint import pprint
 import time
 
-import json
 from flask import Blueprint
 from flask import request
 from flask import jsonify
 
 from flask_jwt_extended import create_access_token, create_refresh_token
-from flask_jwt_extended import JWTManager
-from flask_jwt_extended import verify_jwt_in_request
 from flask_jwt_extended import jwt_required, get_jwt
-from flask_jwt_extended import get_jwt_identity
 
 from db.user_service import UserService
-from db.token_store_service import TokenStoreService
 from db.redis_base import AbstractCacheStorage
 from db.token_store_service import get_token_store_service
 
@@ -57,9 +51,11 @@ def sign_up():
     result = request.json # or result = request.get_json(force=True)
     email = result.get('email')
     password = result.get('password')
+    first_name = result.get('first_name')
+    last_name = result.get('last_name')
     print(email)
     db = UserService()
-    response = db.register(email, password)
+    response = db.register(email, password, first_name, last_name)
     print('resp sttttttaaaa: ', response.get('status'))
     if response.get('status') == '201':
         return jsonify(response), 201

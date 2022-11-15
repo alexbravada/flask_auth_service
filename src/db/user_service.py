@@ -11,7 +11,7 @@ class UserService(PostgresService):
     def __init__(self):
         super().__init__()
 
-    def register(self, email, password):
+    def register(self, email, password, first_name=None, last_name=None):
         with Session(self.engine) as session:
             try:
                 user = session.query(User).filter(User.email == email).one()
@@ -24,7 +24,7 @@ class UserService(PostgresService):
             except NoResultFound as e:
                 print(e)
                 print('email not registered')
-                user = User(email=email, password=generate_password_hash(password))
+                user = User(email=email, password=generate_password_hash(password), first_name=first_name, last_name=last_name)
                 session.add(user)
                 session.commit()
             print('after commit')

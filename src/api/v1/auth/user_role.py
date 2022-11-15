@@ -30,7 +30,7 @@ def _json_check(rrequest):
 
 @user_role_bp.route('', methods=['GET'])
 @jwt_required()
-def show_user_role():
+def show_user_role(token_store_service: AbstractCacheStorage = get_token_store_service()):
     ''' curl -X GET -H "Authorization: Bearer <access_token>" http://127.0.0.1:5000/api/v1/auth/user/role'''
     access_token = request.headers['Authorization']
     payload = get_jwt()
@@ -51,7 +51,7 @@ def show_user_role():
 
 @user_role_bp.route('/user_role_add', methods=['POST'])
 @jwt_required()
-def user_add_role():
+def user_add_role(token_store_service: AbstractCacheStorage = get_token_store_service()):
     ''' curl -X POST -H "Authorization: Bearer <access_token>" http://127.0.0.1:5000/api/v1/auth/user/role/user_role_add'''
     access_token = request.headers['Authorization']
     payload = get_jwt()
@@ -76,7 +76,7 @@ def user_add_role():
 
 @user_role_bp.route('/user_role_show/<int:user_id>', methods=['GET'])
 @jwt_required()
-def user_check_role(user_id):
+def user_check_role(user_id, token_store_service: AbstractCacheStorage = get_token_store_service()):
     ''' curl -X GET -H "Authorization: Bearer <access_token>" http://127.0.0.1:5000/api/v1/auth/user/role/user_role_show/1'''
     access_token = request.headers['Authorization']
     payload = get_jwt()
@@ -97,7 +97,7 @@ def user_check_role(user_id):
 
 @user_role_bp.route('/role_user_show/<int:role_id>', methods=['GET'])
 @jwt_required()
-def role_check_user(role_id):
+def role_check_user(role_id, token_store_service: AbstractCacheStorage = get_token_store_service()):
     ''' curl -X GET -H "Authorization: Bearer <access_token>" http://127.0.0.1:5000/api/v1/auth/user/role/role_user_show/1'''
     access_token = request.headers['Authorization']
     payload = get_jwt()
@@ -118,7 +118,7 @@ def role_check_user(role_id):
 
 @user_role_bp.route('/user_role_delete', methods=['DELETE'])
 @jwt_required()
-def user_role_remove():
+def user_role_remove(token_store_service: AbstractCacheStorage = get_token_store_service()):
     ''' curl -X DELETE -H "Authorization: Bearer <access_token>" http://127.0.0.1:5000/api/v1/auth/user/role/user_role_delete'''
     access_token = request.headers['Authorization']
     payload = get_jwt()

@@ -24,7 +24,7 @@ def not_found(error):
 
 @role_bp.route("/add", methods=['POST'])
 @jwt_required()
-def add_role():
+def add_role(token_store_service: AbstractCacheStorage = get_token_store_service()):
     '''curl -X POST -H "Content-Type: application/json" -d '{"name":"role_name33", "description":"descrip"}' http://127.0.0.1:5000/api/v1/auth/role/add'''
     access_token = request.headers['Authorization']
     payload = get_jwt()
@@ -75,7 +75,7 @@ def delete_role(token_store_service: AbstractCacheStorage = get_token_store_serv
 
 @role_bp.route('', methods=['GET'])
 @jwt_required()
-def show_roles_all():
+def show_roles_all(token_store_service: AbstractCacheStorage = get_token_store_service()):
     ''' curl -X GET -H "Authorization: Bearer <access_token>" http://127.0.0.1:5000/api/v1/auth/role'''
     access_token = request.headers['Authorization']
     payload = get_jwt()
@@ -96,7 +96,7 @@ def show_roles_all():
 
 @role_bp.route('/<int:role_id>', methods=['GET'])
 @jwt_required()
-def show_role(role_id):
+def show_role(role_id, token_store_service: AbstractCacheStorage = get_token_store_service()):
     ''' curl -X GET -H "Authorization: Bearer <access_token>" http://127.0.0.1:5000/api/v1/auth/role/1'''
     access_token = request.headers['Authorization']
     payload = get_jwt()
@@ -117,7 +117,7 @@ def show_role(role_id):
 
 @role_bp.route('/update', methods=['PUT'])
 @jwt_required()
-def update_role():
+def update_role(token_store_service: AbstractCacheStorage = get_token_store_service()):
     ''' curl -X PUT -H "Authorization: Bearer <access_token>" http://127.0.0.1:5000/api/v1/auth/role/update'''
     access_token = request.headers['Authorization']
     payload = get_jwt()

@@ -15,7 +15,7 @@ from flask_jwt_extended import get_jwt_identity
 
 from db.role_service import RoleService
 
-user_role_bp = Blueprint('user_role', __name__, url_prefix='/user/role')
+user_role_bp = Blueprint('userrole', __name__, url_prefix='/userrole')
 
 
 # TODO add JWT required to each route

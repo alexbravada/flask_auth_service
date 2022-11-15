@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_jwt_extended import JWTManager
 
 from api import api_blueprint
@@ -13,6 +13,12 @@ jwt = JWTManager(app)
 
 
 app.register_blueprint(api_blueprint)
+
+
+@app.route('/')
+def get_docs():
+    print('sending docs')
+    return render_template('swaggerui.html')
 
 
 if __name__ == '__main__':

@@ -15,11 +15,13 @@ class TokenStoreService:
         #self.storage = RedisStorage(conn = get_redis())
         self.storage = storage
     def add_to_blacklist(self, token: str, value: str = "True", expired: int = 600):
-        self.storage.set(key=token, value=value, ex=datetime.timedelta(seconds=expired))
+        self.storage.set(token, value=value, ex=datetime.timedelta(seconds=expired))
 
     def check_blacklist(self, token) -> str:
-        token = self.storage.get(token)
-        return token
+        res = self.storage.get(token)
+        print(token)
+        print('from blacklist', res)
+        return res
 
     def logout_all(self, email: str, iat = round(time.time()), expired: int = 2600000):
         print('logout_all')

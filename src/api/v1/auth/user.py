@@ -71,7 +71,8 @@ def logout(token_store_service: AbstractCacheStorage = get_token_store_service()
     jwt = get_jwt()
     now = round(time.time())
     refresh_exp = jwt.get('exp')
-    refresh_token = request.headers['Authorization']
+    refresh_token = request.headers['Authorization'].split()[1]
+    print('refresh from logout', refresh_token)
     refresh_ttl = refresh_exp - now
     if refresh_ttl > 0:
         #ttl = datetime.timedelta(seconds=total)
@@ -79,9 +80,9 @@ def logout(token_store_service: AbstractCacheStorage = get_token_store_service()
     token_store_service.add_to_blacklist(access_token, expired=600)
     print('zapisal')
     token_in = token_store_service.check_blacklist(refresh_token)
-    print(token_store_service.check_blacklist(refresh_token))
-    print(token_store_service.check_blacklist(access_token))
-    print(token_store_service.check_blacklist("random key"))
+    print('check refresh', token_store_service.check_blacklist(refresh_token))
+    print('check access', token_store_service.check_blacklist(access_token))
+    print('chech random', token_store_service.check_blacklist("random key"))
     #return {"token": str(token_in)}
     return jsonify(token_in), 200
 
@@ -150,7 +151,7 @@ def access(token_store_service: AbstractCacheStorage = get_token_store_service()
     email = payload.get('email')
     iat = payload.get('iat')
     print(type(iat))
-    token = request.headers['Authorization']
+    token = request.headers['Authorization'].split()[1]
     print('eto timestamp', payload.get('exp'))
     print('eto payload email', payload.get('email'))
     blacklist = token_store_service.check_blacklist(token)
@@ -168,7 +169,7 @@ def get_refresh(token_store_service: AbstractCacheStorage = get_token_store_serv
     '''
     print(get_jwt())
     #print('eto Refresh TOK', request.headers['Authorization'])
-    old_refresh_token = request.headers['Authorization']
+    old_refresh_token = request.headers['Authorization'].split()[1]
     old_access_token = request.json.get('access_token')
     jwt = get_jwt()
     refresh_exp = jwt.get('exp') - jwt.get('iat')

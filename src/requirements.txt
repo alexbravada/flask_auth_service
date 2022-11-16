@@ -8,3 +8,4 @@ python-dotenv==0.21.0
 pydantic==1.10.2
 orjson==3.8.1
 redis==4.3.4
+mimesis==6.1.1

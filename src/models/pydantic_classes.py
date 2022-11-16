@@ -27,6 +27,7 @@ class UserOutput(BaseOrjsonModel):
     modified: Optional[str]
     is_active: bool
     is_verified: bool
+    is_admin: bool
 
 
 '''{'id': 1, 'created': datetime.datetime(2022, 11, 7, 14, 14, 27, 547219),

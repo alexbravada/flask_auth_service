@@ -13,7 +13,11 @@
   "tags": [
     {
       "name": "users",
-      "description": "API make authorization and authentication"
+      "description": "API makes authorization and authentication"
+    },
+    {
+      "name": "role",
+      "description": "API makes role management"
     }
   ],
   "paths": {
@@ -41,7 +45,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/components/schemas/emailPasswordResponseBody"
+              "$ref": "#/components/schemas/accessRefreshTokensResponseBody"
             }
           },
           "401": {
@@ -71,45 +75,109 @@
           "application/json"
         ],
         "responses": {
+          "201": {
+            "description": "OK",
+            "schema": {
+              "status": "201"
+            }
+          },
+          "403": {
+            "description": "email already exists"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/user/logout": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Logouts user, returns 200 if succeed, 422 otherwise",
+        "requestBody": {
+          "description": "refresh token",
+          "required": true,
+          "headers": {
+            "Authorization": "Bearer <refresh_token>"
+          },
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/accessTokenRequestBody"
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/components/schemas/id"
+              "$ref": "#/components/schemas/accessRefreshTokensResponseBody"
             }
           },
           "401": {
+            "description": "UNAUTHORIZED"
+          },
+          "422": {
             "description": "Invalid email or password"
           }
         }
       }
     },
-    "/request": {
-      "get": {
+    "/api/v1/auth/user/logout_all": {
+      "post": {
         "tags": [
-          "Book Request"
+          "users"
         ],
-        "summary": "Returns bookRequests",
+        "summary": "Logouts user at all, returns 200 if succeed, 422 otherwise",
+        "requestBody": {
+          "description": "access token",
+          "required": true,
+          "headers": {
+            "Authorization": "Bearer <access_token>"
+          },
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/roleNameDescriptionRequestBody"
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/components/schemas/bookRequests"
+              "$ref": "#/components/schemas/accessRefreshTokensResponseBody"
             }
+          },
+          "401": {
+            "description": "UNAUTHORIZED"
+          },
+          "422": {
+            "description": "Invalid email or password"
           }
         }
-      },
+      }
+    },
+    "/api/v1/auth/user/change_password": {
       "post": {
         "tags": [
-          "Book Request"
+          "users"
         ],
-        "summary": "Create a new book request system",
+        "summary": "Returns 200 if succeed, 401 otherwise",
         "requestBody": {
-          "description": "Book Request Post Object",
+          "description": "email / password Post Object",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/bookRequestPostBody"
+                "$ref": "#/components/schemas/emailPasswordChangeRequestBody"
               }
             }
           }
@@ -121,16 +189,215 @@
           "201": {
             "description": "OK",
             "schema": {
-              "$ref": "#/components/schemas/id"
+              "status": "200"
             }
           },
-          "400": {
-            "description": "Failed. Bad post data."
+          "401": {
+            "description": "Invalid email or password"
           }
         }
       }
     },
-    "/request/{id}": {
+    "/api/v1/auth/user/change_email": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Returns 200 if succeed, 401 otherwise",
+        "requestBody": {
+          "description": "email / password Post Object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/emailChangePasswordRequestBody"
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "OK",
+            "schema": {
+              "status": "200"
+            }
+          },
+          "401": {
+            "description": "Invalid email or password"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/user/access": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Check access token not expired, returns 200 if succeed, 403 otherwise",
+        "requestBody": {
+          "description": "access token",
+          "required": true,
+          "headers": {
+            "Authorization": "Bearer <access_token>"
+          },
+          "content": {
+            "application/json": {
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Access Token expired"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/user/refresh": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Logouts user, returns 200 if succeed, 422 otherwise",
+        "requestBody": {
+          "description": "refresh token",
+          "required": true,
+          "headers": {
+            "Authorization": "Bearer <refresh_token>"
+          },
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/accessTokenRequestBody"
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/components/schemas/accessRefreshTokensResponseBody"
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED"
+          },
+          "422": {
+            "description": "Invalid email or password"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/role/add": {
+      "post": {
+        "tags": [
+          "role"
+        ],
+        "summary": "adds another role 201 if succeed, 400/403 otherwise",
+        "requestBody": {
+          "description": "access token",
+          "required": true,
+          "headers": {
+            "Authorization": "Bearer <access_token>"
+          },
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/roleNameDescriptionRequestBody"
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "OK"
+          },
+          "400": {
+          },
+          "403": {
+          }
+        }
+      }
+    },
+    "/api/v1/auth/role/delete": {
+      "delete": {
+        "tags": [
+          "role"
+        ],
+        "summary": "delete role  200 if succeed, 400/403 otherwise",
+        "requestBody": {
+          "description": "access token",
+          "required": true,
+          "headers": {
+            "Authorization": "Bearer <access_token>"
+          },
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/roleIdRequestBody"
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+          },
+          "403": {
+          }
+        }
+      }
+    },
+    "/api/v1/auth/role/": {
+      "get": {
+        "tags": [
+          "role"
+        ],
+        "summary": "returns all the roles 200 if succeed, 403 otherwise",
+        "requestBody": {
+          "description": "access token",
+          "required": true,
+          "headers": {
+            "Authorization": "Bearer <access_token>"
+          },
+          "content": {
+            "application/json": {
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+          }
+        }
+      }
+    },
+    "/api/v1/auth/role/{id}": {
       "parameters": [
         {
           "name": "id",
@@ -244,6 +511,40 @@
           }
         }
       }
+    },
+    "/api/v1/auth/role/update": {
+      "update": {
+        "tags": [
+          "role"
+        ],
+        "summary": "delete role  200 if succeed, 400/403 otherwise",
+        "requestBody": {
+          "description": "access token",
+          "required": true,
+          "headers": {
+            "Authorization": "Bearer <access_token>"
+          },
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/roleIdRequestBody"
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+          },
+          "403": {
+          }
+        }
+      }
     }
   },
   "components": {
@@ -253,17 +554,57 @@
         "properties": {
           "email": {
             "type": "string",
-            "format": "string",
+            "format": "email",
             "example": "Alice"
           },
           "password": {
+            "type": "string",
+            "format": "string",
+            "example": "ChangeMe"
+          }
+        }
+      },
+      "emailPasswordChangeRequestBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "Alice"
+          },
+          "new_password": {
+            "type": "string",
+            "format": "string",
+            "example": "ChangeMe"
+          },
+          "old_password": {
             "type": "string",
             "format": "email",
             "example": "ChangeMe"
           }
         }
       },
-      "emailPasswordResponseBody": {
+      "emailChangePasswordRequestBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "Alice"
+          },
+          "password": {
+            "type": "string",
+            "format": "string",
+            "example": "ChangeMe"
+          },
+          "new_email": {
+            "type": "string",
+            "format": "email",
+            "example": "ChangeMe"
+          }
+        }
+      },
+      "accessRefreshTokensResponseBody": {
         "type": "object",
         "properties": {
           "access_token": {
@@ -283,51 +624,38 @@
           }
         }
       },
-      "id": {
+      "accessTokenRequestBody": {
+        "type": "object",
         "properties": {
-          "uuid": {
-            "type": "string"
+          "access_token": {
+            "type": "string",
+            "format": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiODA5OTEwMDIwMzAiLCJleHBpcmVBdCI6MTUxNjIzOTAyMiwicm9sZSI6InN1YnNjcmliZXIifQ.MyXHl4ZbvRNwdZI8BEWDxJXBRAGJ3sf8rcpSMhG0HtY"
           }
         }
       },
-      "bookRequestPostBody": {
+      "roleNameDescriptionRequestBody": {
         "type": "object",
         "properties": {
-          "title": {
+          "name": {
             "type": "string",
-            "format": "string"
+            "format": "string",
+            "example": "role_name33"
           },
-          "email": {
+          "description": {
             "type": "string",
-            "format": "email"
+            "format": "string",
+            "example": "descrip"
           }
         }
       },
-      "bookRequest": {
+      "roleIdRequestBody": {
         "type": "object",
         "properties": {
-          "title": {
+          "id": {
             "type": "string",
-            "format": "string"
-          },
-          "email": {
-            "type": "string",
-            "format": "email"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "number"
-          }
-        }
-      },
-      "bookRequests": {
-        "type": "object",
-        "properties": {
-          "bookRequest": {
-            "type": "object",
-            "additionalProperties": {
-              "$ref": "#/components/schemas/bookRequest"
-            }
+            "format": "string",
+            "example": "123"
           }
         }
       }

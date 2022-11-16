@@ -6,7 +6,7 @@ from flask import abort
 
 from flask_jwt_extended import jwt_required, get_jwt
 from db.role_service import RoleService
-
+from db.token_store_service import AbstractCacheStorage, get_token_store_service
 
 user_role_bp = Blueprint('user_role', __name__, url_prefix='/user/role')
 
